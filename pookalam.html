@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Step by Step Kerala Pookalam</title>
+<style>
+  body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f9f6f2;
+    height: 100vh;
+  }
+  canvas {
+    border-radius: 50%;
+    box-shadow: 0 0 40px rgba(0,0,0,0.3);
+  }
+</style>
+</head>
+<body>
+<canvas id="pookalam" width="600" height="600"></canvas>
+
+<script>
+const canvas = document.getElementById("pookalam");
+const ctx = canvas.getContext("2d");
+const cx = canvas.width / 2;
+const cy = canvas.height / 2;
+const radius = canvas.width / 2 - 20;
+
+// Traditional Kerala flower colors
+const colors = [
+  "#FFB703", // saffron yellow
+  "#E63946", // red
+  "#2A9D8F", // green
+  "#F4A261", // orange
+  "#8E44AD", // purple
+  "#FFFFFF"  // white
+];
+
+// Step configuration: each step has a function
+let steps = [];
+let currentStep = 0;
+
+function addCircleLayer(color, fraction) {
+  steps.push(() => {
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius * fraction, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
+    ctx.fill();
+  });
+}
+
+function addPetals(color, petals, dist, petalRadius, petalWidth) {
+  steps.push(() => {
+    for (let i = 0; i < petals; i++) {
+      const angle = (2 * Math.PI / petals) * i;
+      const px = cx + Math.cos(angle) * dist;
+      const py = cy + Math.sin(angle) * dist;
+
+      ctx.beginPath();
+      ctx.ellipse(px, py, petalRadius, petalWidth, angle, 0, 2 * Math.PI);
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+  });
+}
+
+// Build the Pookalam design steps
+addCircleLayer("#FFB703", 1);      // outer yellow base
+addPetals("#E63946", 24, radius*0.85, 40, 15); // red petals around
+addCircleLayer("#2A9D8F", 0.7);    // inner green circle
+addPetals("#F4A261", 16, radius*0.55, 30, 12); // orange petals
+addCircleLayer("#8E44AD", 0.4);    // purple circle
+addCircleLayer("#FFFFFF", 0.25);   // white inner
+addCircleLayer("#FFD700", 0.12);   // golden center
+
+// Animate step by step
+function drawNextStep() {
+  if (currentStep < steps.length) {
+    steps[currentStep]();
+    currentStep++;
+    setTimeout(drawNextStep, 1000); // 1 second per step
+  }
+}
+
+drawNextStep();
+</script>
+</body>
+</html>
